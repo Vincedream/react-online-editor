@@ -15,4 +15,4 @@ RUN npm run build
 
 EXPOSE 80
 
-ENTRYPOINT ["node", "index.js"]
+ENTRYPOINT ["node", "server.js"]
