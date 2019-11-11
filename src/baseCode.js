@@ -18,33 +18,37 @@ export const baseScriptCode = `
 `
 
 export const baseJsxCode = `
-  const Test = () => { return (<div>this is test Component</div>) }
-  class App extends React.Component {
-    constructor(props) {
-      super(props)
-      this.state = {
-        value: 'Hello!'
-      }
-      this.handleChange = this.handleChange.bind(this)
+const Test = () => { return (<div>this is test Component</div>) }
+class App extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      value: 'Hello!'
     }
-    handleChange(event) {
-      this.setState({ value: event.target.value });
-    }
-    render() {
-      var value = this.state.value;
-      return (
-        <div>
-          <input type="text" value={value} onChange={this.handleChange} />
-          <p>{value}</p>
-          <Test />
-        </div>
-      );
-    }
+    this.handleChange = this.handleChange.bind(this)
   }
-  ReactDOM.render(
-    <App />,
-    document.getElementById('root')
-  );
+  handleChange(event) {
+    this.setState({ value: event.target.value });
+  }
+  render() {
+    var value = this.state.value;
+    return (
+      <div>
+        <h1>Hello this is a Online Editor</h1>
+        <input type="text" value={value} onChange={this.handleChange} />
+        <p>{value}</p>
+        <Test />
+      </div>
+    );
+  }
+}
+
+
+ReactDOM.render(
+  <App />,
+  document.getElementById('root')
+);
+
 `
 
 export const baseCssCode = `
