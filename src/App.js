@@ -3,6 +3,7 @@ import {Controlled as CodeMirror} from 'react-codemirror2';
 import axios from 'axios';
 import classnames from 'classnames';
 import * as Babel from '@babel/standalone';
+import qs from 'qs';
 import { baseScriptCode, baseJsxCode, baseCssCode } from './baseCode';
 import jsIcon from './icon/js.png';
 import cssIcon from './icon/css.png';
@@ -19,6 +20,7 @@ require('codemirror/mode/css/css.js');
 
 
 const getUUid = () => Number(Math.random().toString().substr(2, 5) + Date.now()).toString(36);
+const getEditId = () => qs.parse(window.location.search.slice(1)).editId || null;
 
 const uploadFileToOSSUrl = 'https://1556981199176880.cn-shanghai.fc.aliyuncs.com/2016-08-15/proxy/react-online-edit/createFileAndUploadToOSS/';
 
@@ -73,17 +75,17 @@ class App extends React.Component {
 
     // 获取远程源代码加载
     loadCodeFromOss = () => {
-      const { pathname } = window.location;
+      const editId = getEditId();
       // 当进入初始url时
-      if (pathname === "/") {
+      if (!editId) {
         const uuid = getUUid();
-        window.history.pushState(null, null, `/${uuid}`);
+        window.history.pushState(null, null, `?editId=${uuid}`);
         this.initRunCode();
       } else {
-        // 当 pathname 不为空，请求数据
+        // 当 editId 不为空，请求数据
         axios({
           method: 'get',
-          url: `http://officespace2.oss-cn-beijing.aliyuncs.com${pathname}.json`
+          url: `http://officespace2.oss-cn-beijing.aliyuncs.com/${editId}.json`
         }).then(res => {
           const { jsxCode, cssCode } = res.data;
           this.setState({
@@ -100,9 +102,9 @@ class App extends React.Component {
 
     // 将源代码（未经编译）传入OSS
     uploadOriginCodeToOss = () => {
-      const { pathname } = window.location;
+      const editId = getEditId();
       const { jsxCode, cssCode } = this.state;
-      const fileName = `${pathname.slice(1, pathname.length)}.json`;
+      const fileName = `${editId}.json`;
       this.uploadFile(fileName, JSON.stringify({
         jsxCode,
         cssCode
@@ -163,11 +165,11 @@ class App extends React.Component {
       this.setState({
         isPublishLoading: true
       })
-      const { pathname } = window.location;
-      const filePreName = `${pathname.slice(1, pathname.length)}`;
+      const editId = getEditId();
+      const filePreName = `${editId}`;
       const { cssCode, jsxCode } = this.state;
       const transformJsxCode = this.transFormJsxCode(jsxCode);
-      const sharePageUrl = `${window.location.origin}/share${pathname}`;
+      const sharePageUrl = `${window.location.origin}/share/${editId}`;
       Promise.all([this.uploadFile(`${filePreName}.js`, transformJsxCode), this.uploadFile(`${filePreName}.css`, cssCode)]).then(res => {
         this.setState({
           isPublished: true,
@@ -196,8 +198,8 @@ class App extends React.Component {
     }
     render() {
         const { isPublished, isPublishLoading, jsxCode, cssCode, tabSelected, cssCodeSaved, jsxCodeSaved, initTransFormCode } = this.state;
-        const { pathname } = window.location;
-        const sharePageUrl = `${window.location.origin}/share${pathname}`;
+        const editId = getEditId();
+        const sharePageUrl = `${window.location.origin}/share/${editId}`;
         return (
             <div className="app-page">
               <div className="code-layout">
