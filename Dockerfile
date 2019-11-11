@@ -23,6 +23,6 @@ COPY . /usr/src/node-app
 
 RUN npm run build
 
-EXPOSE 80
+EXPOSE 3001
 
 ENTRYPOINT ["node", "server.js"]
