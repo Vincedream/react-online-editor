@@ -1,9 +1,22 @@
 import React from 'react';
-import './App.css';
+import {Controlled as CodeMirror} from 'react-codemirror2';
 import axios from 'axios';
+import classnames from 'classnames';
 import * as Babel from '@babel/standalone';
-
 import { baseScriptCode, baseJsxCode, baseCssCode } from './baseCode';
+import jsIcon from './icon/js.png';
+import cssIcon from './icon/css.png';
+import browserIcon from './icon/browser.png';
+import loadingIcon from './icon/loading.png';
+import dotIcon from './icon/dot.png';
+
+import './App.css';
+require('codemirror/lib/codemirror.css');
+require('codemirror/theme/material.css');
+require('codemirror/mode/javascript/javascript.js');
+require('codemirror/mode/jsx/jsx.js');
+require('codemirror/mode/css/css.js');
+
 
 const getUUid = () => Number(Math.random().toString().substr(2, 5) + Date.now()).toString(36);
 
@@ -13,6 +26,19 @@ const jsxCodeTransform = (input) => {
   return Babel.transform(input, { presets: ['react', 'es2015'] }).code;
 };
 
+const TabList = [
+  {
+    key: 'jsxCode',
+    iconImg: jsIcon,
+    title: 'App.js'
+  },
+  {
+    key: 'cssCode',
+    iconImg: cssIcon,
+    title: 'App.css'
+  },
+]
+
 class App extends React.Component {
     constructor(props) {
       super(props);
@@ -20,6 +46,11 @@ class App extends React.Component {
         jsxCode: baseJsxCode,
         cssCode: baseCssCode,
         initTransFormCode: '', // 初始注入到 Iframe 的代码
+        cssCodeSaved: true,
+        jsxCodeSaved: true,
+        tabSelected: TabList[0].key, // 
+        isPublished: false, // 是否已经发布过
+        isPublishLoading: false, // 是否正在发布页面
       }
     }
     componentDidMount() {
@@ -61,6 +92,8 @@ class App extends React.Component {
           }, () => {
             this.initRunCode();
           })
+        }).catch(() => {
+          this.initRunCode();
         })
       }
     }
@@ -94,13 +127,17 @@ class App extends React.Component {
         e.preventDefault();
         this.postCodeToIframe(type);
         this.uploadOriginCodeToOss();
+        this.setState({
+          [`${type}Saved`]: true
+        })
       }
     }
 
     // 绑定 input
-    handleInputCode = (e, type) => {
+    handleInputCode = (value, type) => {
       this.setState({
-        [type]: e.target.value
+        [type]: value,
+        [`${type}Saved`]: false
       })
     }
 
@@ -123,12 +160,20 @@ class App extends React.Component {
 
     // 发布页面
     handleSharePage = () => {
+      this.setState({
+        isPublishLoading: true
+      })
       const { pathname } = window.location;
       const filePreName = `${pathname.slice(1, pathname.length)}`;
       const { cssCode, jsxCode } = this.state;
       const transformJsxCode = this.transFormJsxCode(jsxCode);
+      const sharePageUrl = `${window.location.origin}/share${pathname}`;
       Promise.all([this.uploadFile(`${filePreName}.js`, transformJsxCode), this.uploadFile(`${filePreName}.css`, cssCode)]).then(res => {
-        console.log(`${window.location.origin}/share${pathname}`);
+        this.setState({
+          isPublished: true,
+          isPublishLoading: false
+        });
+        window.open(sharePageUrl)
       })
     }
 
@@ -144,30 +189,75 @@ class App extends React.Component {
       })
     }
 
-
+    handleChangeTab = (key) => {
+      this.setState({
+        tabSelected: key
+      })
+    }
     render() {
-        const { jsxCode, cssCode, initTransFormCode } = this.state;
+        const { isPublished, isPublishLoading, jsxCode, cssCode, tabSelected, cssCodeSaved, jsxCodeSaved, initTransFormCode } = this.state;
+        const { pathname } = window.location;
+        const sharePageUrl = `${window.location.origin}/share${pathname}`;
         return (
-            <div>
-                <button onClick={this.handleSharePage}>share</button>
-                <div style={{display: 'flex'}}>
-                  <div>
-                    <textarea onKeyDown={ (e) => { this.handleSaveCode(e, 'jsxCode') } } style={{width: 500, height: 300,}} value={jsxCode} onChange={(e) => { this.handleInputCode(e, 'jsxCode') }}>
-                    </textarea>
-                  </div>
-                  <div>
-                    <textarea onKeyDown={ (e) => { this.handleSaveCode(e, 'cssCode') } } style={{width: 500, height: 300,}} value={cssCode} onChange={(e) => { this.handleInputCode(e, 'cssCode') }}>
-                    </textarea>
-                  </div>
+            <div className="app-page">
+              <div className="code-layout">
+                <div className="tab-wrap">
+                  {TabList.map(item => (
+                    <div key={item.key} onClick={() => { this.handleChangeTab(item.key) }} className={classnames("tab-item", { "tab-item--selected": item.key ===  tabSelected})}>
+                      <img className="tab-icon" src={item.iconImg} alt="" />
+                      {item.title}
+                      {((item.key === 'jsxCode' && !jsxCodeSaved) || (item.key === 'cssCode' && !cssCodeSaved)) && <img className="dot-icon" src={dotIcon} alt=""/>}
+                    </div>
+                  ))}
+                  <div className="reload-tips">Tips: Cmd/Ctrl + S to reload</div>
                 </div>
-                <div><button onClick={this.handleRunCode}>run</button></div>
-                <iframe
-                  width={600}
-                  height={500}
-                  title="online"
-                  id="preview"
-                  srcDoc={initTransFormCode}
-                />
+                <div className="code-wrap">
+                  {tabSelected === 'jsxCode' && <CodeMirror
+                    value={jsxCode}
+                    className="code-container"
+                    options={{
+                        mode: 'jsx',
+                        theme: 'material',
+                        lineNumbers: true
+                    }}
+                    onBeforeChange={(editor, data, value) => {
+                        this.handleInputCode(value, 'jsxCode')
+                    }}
+                    onKeyDown={(editor, event) => { this.handleSaveCode(event, 'jsxCode') }}
+                  />}
+                  {tabSelected === 'cssCode' && <CodeMirror
+                    value={cssCode}
+                    className="code-container"
+                    options={{
+                        mode: 'css',
+                        theme: 'material',
+                        lineNumbers: true
+                    }}
+                    onBeforeChange={(editor, data, value) => {
+                        this.handleInputCode(value, 'cssCode')
+                    }}
+                    onKeyDown={(editor, event) => { this.handleSaveCode(event, 'cssCode') }}
+                  />}
+                </div>
+              </div>
+              <div className="browser-layout">
+                <div className="browser-header">
+                  <img className="browser-icon" src={browserIcon} alt=""/>
+                  <div className="url-container">
+                    {isPublished ? sharePageUrl : 'http://localhost (click publish button to show url)'}
+                    {isPublishLoading && <img src={loadingIcon} className="loading-icon" alt=""/>}
+                  </div>
+                  <span onClick={this.handleSharePage} className="share-button">发布</span>
+                </div>
+                <div className="browser-wrap">
+                  <iframe
+                    className="preview-browser"
+                    title="online"
+                    id="preview"
+                    srcDoc={initTransFormCode}
+                  />
+                </div>
+              </div>
             </div>
         )
     }
