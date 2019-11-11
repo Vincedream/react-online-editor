@@ -1,22 +1,149 @@
-.App {
-  text-align: center;
+body {
+  overflow: hidden;
 }
-
-.App-logo {
-  height: 40vmin;
+.app-page {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
 }
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.code-layout {
+  width: 50vw;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #09d3ac;
+.tab-wrap {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 36px;
+  background: rgb(38, 38, 38);
+  color: #fff;
+}
+
+.tab-item {
+  display: flex;
+  width: 145px;
+  line-height: 36px;
+  font-size: 14px;
+  box-sizing: border-box;
+  padding: 0 10px;
+  align-items: center;
+  background: rgb(68, 68, 68);
+  cursor: pointer;
+}
+
+.tab-item--selected {
+  background: rgb(30, 30, 30);
+}
+
+.tab-icon {
+  width: 12px;
+  height: 12px;
+  margin-right: 5px;
+}
+
+.dot-icon {
+  width: 36px;
+  height: 36px;
+  margin-left: 25px;
+}
+
+.reload-tips {
+  position: absolute;
+  right: 5px;
+  top: 10px;
+  font-size: 13px;
+  color: #b5b5b5;
+}
+
+.code-wrap {
+  flex: 1;
+  overflow: scroll;
+}
+.code-container > .CodeMirror,
+.code-container{
+  width: 100%;
+  height: 100%;
+  font-size: 14px;
+}
+
+.browser-layout {
+  display: flex;
+  width: 50vw;
+  height: 100vh;
+  flex-direction: column;
+}
+
+.browser-header {
+  display: flex;
+  height: 36px;
+  width: 100%;
+  background: rgb(38, 38, 38);
+  color: #fff;
+  align-items: center;
+  padding: 0 5px;
+  box-sizing: border-box;
+}
+
+.browser-icon {
+  width: 22px;
+  height: 22px;
+  margin-right: 8px;
+}
+
+.url-container {
+  position: relative;
+  flex: 1;
+  height: 28px;
+  line-height: 26px;
+  background: rgb(85, 85, 85);
+  border-radius: 4px;
+  padding: 0 5px;
+  font-size: 13px;
+  margin-right: 8px;
+}
+
+.loading-icon {
+  position: absolute;
+  right: 5px;
+  width: 26px;
+  height: 26px;
+  animation: donut-spin 1.2s linear infinite;
+}
+
+.share-button {
+  height: 28px;
+  padding: 0 10px;
+  line-height: 28px;
+  cursor: pointer;
+  background: rgb(85, 85, 85);
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 2px;
+}
+.share-button:hover {
+  background: #6b6b6b;
+}
+
+.browser-wrap {
+  flex: 1;
+  width: 100%;
+}
+
+.preview-browser {
+  border: 0;
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes donut-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
