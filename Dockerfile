@@ -1,5 +1,6 @@
 # 设置基础镜像,如果本地没有该镜像，会从Docker.io服务器pull镜像
 FROM node:8.16.2-alpine
+ARG OSS_KEY_SECRET
 # 设置时区
 RUN apk --update add tzdata \
     && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
@@ -22,6 +23,8 @@ RUN npm i --registry=https://registry.npm.taobao.org
 COPY . /usr/src/node-app
 
 RUN npm run build
+
+RUN node cdn.js $OSS_KEY_SECRET
 
 EXPOSE 3001
 
