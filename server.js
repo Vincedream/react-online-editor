@@ -1,9 +1,11 @@
 const express = require('express'); //express框架模块
 const path = require('path'); //系统路径模块
 const app = express();
+const compression = require('compression');
 
 const port = 3001; //端口
 
+app.use(compression());
 app.use(express.static(path.join(__dirname, 'build'))); //指定静态文件目录
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
