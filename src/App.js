@@ -10,6 +10,7 @@ import cssIcon from './icon/css.png';
 import browserIcon from './icon/browser.png';
 import loadingIcon from './icon/loading.png';
 import dotIcon from './icon/dot.png';
+import githubIcon from './icon/github.png';
 
 import './App.css';
 require('codemirror/lib/codemirror.css');
@@ -151,12 +152,12 @@ class App extends React.Component {
         document.getElementById("preview").contentWindow.postMessage({
           type: 'jsxCode',
           content: transFormJsxCode
-        });
+        }, "*");
       } else if (type === 'cssCode') {
         document.getElementById("preview").contentWindow.postMessage({
           type: 'cssCode',
           content: cssCode
-        });
+        }, "*");
       }
     }
 
@@ -250,6 +251,7 @@ class App extends React.Component {
                     {isPublishLoading && <img src={loadingIcon} className="loading-icon" alt=""/>}
                   </div>
                   <span onClick={this.handleSharePage} className="share-button">发布</span>
+                  <a target="_blank" href="https://github.com/Vincedream/react-online-editor"><img className="github-icon" src={githubIcon} alt=""/></a>
                 </div>
                 <div className="browser-wrap">
                   <iframe
