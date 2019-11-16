@@ -94,6 +94,21 @@ body {
   margin-right: 8px;
 }
 
+.github-icon {
+  width: 22px;
+  height: 22px;
+  margin-left: 12px;
+  margin-right: 8px;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: all 0.1s ease-in-out;
+  vertical-align: bottom;
+}
+
+.github-icon:hover {
+  opacity: 1;
+}
+
 .url-container {
   position: relative;
   flex: 1;
@@ -116,7 +131,7 @@ body {
 
 .share-button {
   height: 28px;
-  padding: 0 10px;
+  padding: 0 15px;
   line-height: 28px;
   cursor: pointer;
   background: rgb(85, 85, 85);
@@ -131,6 +146,7 @@ body {
 .browser-wrap {
   flex: 1;
   width: 100%;
+  overflow: scroll;
 }
 
 .preview-browser {
