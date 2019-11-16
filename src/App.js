@@ -176,7 +176,12 @@ class App extends React.Component {
           isPublished: true,
           isPublishLoading: false
         });
-        window.open(sharePageUrl)
+        const clickTarget = document.createElement('a');
+        clickTarget.id="clickTarget";
+        clickTarget.target="_blank";
+        clickTarget.href=sharePageUrl;
+        document.body.append(clickTarget)
+        document.getElementById('clickTarget').click()
       })
     }
 
