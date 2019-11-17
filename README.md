@@ -14,7 +14,7 @@
 
 是的，你没有看错，这一切都是发生在浏览器上，更为惊叹的是，CodeSanBox 是个人项目，并不是由专业的公司团队开发完成。其强大功能证明了，浏览器能够做的事情是无穷无尽的，下面我将简单讲解其结构以及实现方案。
 
-![image](http://static5.vince.xin/WeChate987f08313e53d34abc458997a652daf.png)
+![image](http://static4.vince.xin/WeChate987f08313e53d34abc458997a652daf.png)
 
 其主要结构分为以下几个部分：
 
@@ -56,13 +56,13 @@
 
 在解决上述问题，我们先对 Online Editor 的结构做一个讲解：
 
-![image](http://static5.vince.xin/WeChat10f42ef16c117e1e72dd14a76599d0b0.png)
+![image](http://static4.vince.xin/WeChat10f42ef16c117e1e72dd14a76599d0b0.png)
 
 这是项目主要的结构，首先，用户编写代码后，Cmd/Ctrl + S 保存代码，触发 @babel/standalone 转译，这里将 ES6、JSX 的代码转译成 ES5 的可执行代码以及可可执行的 CSS 代码，注入到浏览器内嵌的 Iframe 中，使得 Iframe 刷新重新运行新的代码，同时，这一步我们会将用户编写的 Js、Css 代码以字符串的方式以一个唯一的 uuid 作为标识存入到 OSS 中，只要用户持有当前的 url，遍能访问到之前写的代码，这里我们便解决了上述的第1、2、4个问题。
 
 用户编写完后，需要将其当前页面发布到线上环境，供其他人访问，这里我们看下面的分析结构图：
 
-![image](http://static5.vince.xin/WeChatc0a10bf2c12d97c4517fc91605caaa92.png)
+![image](http://static4.vince.xin/WeChatc0a10bf2c12d97c4517fc91605caaa92.png)
 
 当我们点击发布按钮时，将转译后的 js 与 Css 代码存入到 OSS 中，以 `<script>` `<link>` 的方式注入到发布页面，这里我们完成了上述的第 5 个问题。
 
